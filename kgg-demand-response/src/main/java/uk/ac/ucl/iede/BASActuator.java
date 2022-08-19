@@ -116,6 +116,7 @@ public class BASActuator extends RBCController {
         // CHECK IF THE INPUT LIST OF ZONES WITH REQUIRED FUNCTIONS MATCH THE QUERIED FUNCTIONS AVAILABLE PER ZONE, IF SO ADD THE DATAPOINTS TO THE FUNCTION DICTIONARIES
     public void matchRequiredAndAvailableFunctions() {
 
+    	//test
         // FOR offMode FUNCTION
         for (String currentZoneOffMode : (ArrayList<String>) offModeZones.get("Zones")) {
             if (onOffDatapointsPerZone.containsKey(currentZoneOffMode)) {
