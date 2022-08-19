@@ -85,6 +85,7 @@ public class ConverterTest {
 		for(CSVRecord record : recordIterator) {
 			HashSet<String> uniqueValues = new HashSet<>();
 			uniqueValues.add(record.get("deviceSerialNumber"));
+			// test
 			Iterator<String> iterate_value = uniqueValues.iterator();
 			while (iterate_value.hasNext()) {
 				if (record.get("deviceSerialNumber").equals(iterate_value.next())) {
