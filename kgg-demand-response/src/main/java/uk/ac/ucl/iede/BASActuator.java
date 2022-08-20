@@ -31,15 +31,13 @@ public class BASActuator extends RBCController  {
     Map<Object, Object> tempSetNormalZones = new HashMap<>();   // With "Zones", "Function", "Setpoint value" and "Slot time" keys 
      */
 	
-	private static final Object ArrayListString = null;
-
 	public static void main(String[] args) throws IOException, ParseException {		
 		
 		Model DRgraph = RDFDataMgr.loadModel("D:/datos-flaand/DRgraph.ttl");
 		Reader priceReader = new FileReader("D:/datos-flaand/prices.csv");	
 		Reader scheduleReader = new FileReader("D:/datos-flaand/occSchedule.csv");	
 		Reader statusReader = new FileReader("D:/datos-flaand/occStatus.csv");	
-		
+
 		EventPrice eventPrice = new EventPrice(); 
 		eventPrice.searchPrice(priceReader);
 		System.out.println("PriceEvent? " + eventPrice.isPriceEvent());
@@ -190,7 +188,7 @@ public class BASActuator extends RBCController  {
 
         // FOR tempSetNormal FUNCTION
           for (Map.Entry<String, String> queryList : levelDatapointsPerZone.entrySet()) {
-              //System.out.println(queryList.getKey());
+              System.out.println(queryList.getKey());
         	  ArrayList<String> zones = new ArrayList();
               zones = (ArrayList<String>) tempSetNormalZones.get("Zones");
               if (!(zones==null)) {
@@ -200,6 +198,7 @@ public class BASActuator extends RBCController  {
             		  break;
             	  }
                }
+               
           }    
     
     }

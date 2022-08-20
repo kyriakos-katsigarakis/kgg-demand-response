@@ -70,7 +70,7 @@ public class RBCController {
     public double tempSetMaxValue; //add datapoint per zone?
     public double tempSetMinValue; //add datapoint per zone?
     public double tempSetNormalValue; //add datapoint per zone?
-    public double priceThreshold = 0.0841;
+    public double priceThreshold = 0.15;
     public long startSlot;                     // timeperiod to initiate the commands
 
     Map<Object, Object> offModeZones = new HashMap<>();
@@ -203,7 +203,7 @@ public class RBCController {
             case offMode:
                 // write request for OnOff function for the defined zoneURIs with off command
                 String onOffFunction = "onOffCmd";
-                offModeZones.put("Zones", Arrays.asList(zoneURIs));
+                offModeZones.put("Zones", zoneURIs);
                 offModeZones.put("Function", onOffFunction);
                 offModeZones.put("Start time", startSlot);
         		System.out.println("offMode " + offModeZones);	
@@ -215,7 +215,7 @@ public class RBCController {
             case tempSetMax:
                 // write request for level function for the defined zoneURIs with tempSetMaxValue
                 String tempSetMaxFunction = "levelCmd";
-                tempSetMaxZones.put("Zones", Arrays.asList(zoneURIs));
+                tempSetMaxZones.put("Zones", zoneURIs);
                 tempSetMaxZones.put("Function", tempSetMaxFunction);
                 tempSetMaxZones.put("Setpoint value", tempSetMaxValue);
                 tempSetMaxZones.put("Start time", startSlot);
@@ -241,7 +241,7 @@ public class RBCController {
             case tempSetNormal:
                 // write request for level function for the defined zoneURIs with tempSetNormalValue
                 String tempSetNormalFunction = "levelCmd";
-                tempSetNormalZones.put("Zones", Arrays.asList(zoneURIs));
+                tempSetNormalZones.put("Zones", zoneURIs);
                 tempSetNormalZones.put("Function", tempSetNormalFunction);
                 tempSetNormalZones.put("Setpoint value", tempSetNormalValue);
                 tempSetNormalZones.put("Start time", startSlot);
