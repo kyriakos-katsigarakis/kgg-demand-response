@@ -22,7 +22,6 @@ public class EventPrice {
 		EventPrice eventPrice = new EventPrice(); 
 		eventPrice.searchPrice(priceReader);
 		System.out.println("PriceEvent? " + eventPrice.isPriceEvent());
-
 	}
 	
     private boolean priceEvent = false;     // energy price event trigger
@@ -34,13 +33,12 @@ public class EventPrice {
 	    // Epoch date 	Converted epoch
         // 1640995200	Sat, 01 Jan 2022 00:00:00 +0000
         long correctedCurrentTime = epoch - 1640995200; // Corrected to  match with the time in the timeseries file which starts with 0 to represent January 1st 00:00:00)
-        return (int) correctedCurrentTime;  
-    	
+        return (int) correctedCurrentTime;          
     }
 
 	public void searchPrice(Reader targetReader) throws IOException {
 		long currentTime = getCurrentTime(); // check for current time
-		long futureTime = currentTime + 900; // check for current time + 15min
+		long futureTime = currentTime + 3600; // check for current time + 1h
         double currentPrice = 0;
         
 	    // READ CSV FILE
@@ -48,7 +46,7 @@ public class EventPrice {
         for(CSVRecord record : recordList) {
 
             Integer currentSlot =  Integer.parseInt(record.get("time"));
-            Integer futureSlot =  (Integer.parseInt(record.get("time")) + 900); // slot of 15min
+            Integer futureSlot =  (Integer.parseInt(record.get("time")) + 3600); // slot of 15min
             //System.out.println("csv time " + currentSlot + " " + futureSlot);
 
             // CHECK CURRENT SCHEDULED PRICE FOR ALL ZONES
@@ -56,7 +54,7 @@ public class EventPrice {
             	currentPrice = Double.parseDouble(record.get("PriceElectricPowerDynamic")); 
 	            System.out.println("currentTime " + currentTime + " price " + currentPrice);
             }
-            // CHECK FUTURE SCHEDULED PRICE FOR ALL ZONES (CURRENT TIME + 15 MIN)
+            // CHECK FUTURE SCHEDULED PRICE FOR ALL ZONES (CURRENT TIME + 1 HOUR)
            if (futureTime > currentSlot &  futureTime < futureSlot ) {
         	   futurePrice = Double.parseDouble(record.get("PriceElectricPowerDynamic")); 
 	            System.out.println("futureTime " + futureTime + " price " + futurePrice);

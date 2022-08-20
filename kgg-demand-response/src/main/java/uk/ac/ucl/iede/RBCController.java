@@ -159,13 +159,13 @@ public class RBCController {
                 if (futurePrice < priceThreshold) {
                     ArrayList<String> tempSetNormalZones = new ArrayList<>();
                     tempSetNormalZones.add(zoneURI);
-                    startSlot = currentTime + 900; // To activate control in the future time, when there is the change of price
+                    startSlot = currentTime + 3600; // To activate control in the future time, when there is the change of price
                     configFunction(functionTypesEnum.tempSetNormal, tempSetNormalZones, startSlot); // to send function to ACTUATOR (Tset = Tset normal), list of zones currently occupied
                 }
                 else {
                 	ArrayList<String> tempSetMinZones = new ArrayList<>();
                     tempSetMinZones.add(zoneURI);
-                    startSlot = currentTime + 900; // To activate control in the future time, when there is the change of price
+                    startSlot = currentTime + 3600; // To activate control in the future time, when there is the change of price
                     configFunction(functionTypesEnum.tempSetMin, tempSetMinZones, startSlot); // to send function to ACTUATOR (Tset = Tset min) and list of zones currently occupied
                 }
             } else if (futureOccScheduledZones.contains(zoneURI)) {

@@ -215,7 +215,7 @@ public class BASActuator extends RBCController  {
 
     public void sendCommand() {
 		long currentTime = getCurrentTime(); // check for current time
-		System.out.println(currentTime);
+		System.out.println(currentTime + 900);
 		if (tempSetNormalZones.get("Start time").equals(currentTime)) {
   		  System.out.println("tempSetNormalZonesMatch " + tempSetNormalZones.get("Start time"));
   		  System.out.println("tempSetNormalZonesMatch " + tempSetNormalZones.get("Datapoint"));
