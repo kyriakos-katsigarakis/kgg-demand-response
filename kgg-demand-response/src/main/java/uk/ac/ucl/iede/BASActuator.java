@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.text.ParseException;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.csv.*;
@@ -19,7 +20,7 @@ import org.apache.jena.query.ResultSetFormatter;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.RDFDataMgr;
 
-public class BASActuator extends RBCController {
+public class BASActuator extends RBCController  { 
 
 
     // RECEIVE FROM CONTROLLER: DICTIONARY WITH LIST OF ZONES PER FUNCTION TYPES WITH SETPOINT AND SLOT VALUES
@@ -30,17 +31,41 @@ public class BASActuator extends RBCController {
     Map<Object, Object> tempSetNormalZones = new HashMap<>();   // With "Zones", "Function", "Setpoint value" and "Slot time" keys 
      */
 	
+	private static final Object ArrayListString = null;
+
 	public static void main(String[] args) throws IOException, ParseException {		
 		
 		Model DRgraph = RDFDataMgr.loadModel("D:/datos-flaand/DRgraph.ttl");
+		Reader priceReader = new FileReader("D:/datos-flaand/prices.csv");	
+		Reader scheduleReader = new FileReader("D:/datos-flaand/occSchedule.csv");	
+		Reader statusReader = new FileReader("D:/datos-flaand/occStatus.csv");	
+		
+		EventPrice eventPrice = new EventPrice(); 
+		eventPrice.searchPrice(priceReader);
+		System.out.println("PriceEvent? " + eventPrice.isPriceEvent());
+		
+		EventOccSchedule eventOccSchedule = new EventOccSchedule(); 
+		eventOccSchedule.searchOccIdPerZone(DRgraph);
+		eventOccSchedule.searchOccSchedulePerZone(scheduleReader);
+		System.out.println("OccScheduleEvent? " + eventOccSchedule.isOccScheduleEvent());	
+
+		EventOccStatus eventOccStatus = new EventOccStatus();
+		eventOccStatus.searchOccIdPerZone(DRgraph);
+		eventOccStatus.searchOccStatusPerZone(statusReader);
+		System.out.println("OccStatusEvent? " + eventOccStatus.isOccStatusEvent());	
+
+		RBCController rbcController = new RBCController();
+		rbcController.searchZones(DRgraph);
+		rbcController.interpretRequiredFunction (eventOccStatus, eventPrice, eventOccSchedule);		
+			
 		BASActuator basActuator = new BASActuator(); 
 		basActuator.searchZones(DRgraph);
-		basActuator.matchRequiredAndAvailableFunctions();
+		basActuator.matchRequiredAndAvailableFunctions(rbcController);
 
 	}
 	   
-	   Map<String, String> onOffDatapointsPerZone = new HashMap<>();    // Available onOff function datapoints per zone
-	   Map<String, String> levelDatapointsPerZone = new HashMap<>();    // Available level function datapoints per zone
+    Map<String, String> onOffDatapointsPerZone = new HashMap<>();    // Available onOff function datapoints per zone
+	Map<String, String> levelDatapointsPerZone = new HashMap<>();    // Available level function datapoints per zone
 
 	// CONFIGURE KNOWLEDGE GRAPH INITIALISATION
 	    /*
@@ -59,7 +84,7 @@ public class BASActuator extends RBCController {
 	        DatasetAccessor accessor = DatasetAccessorFactory.createHTTP(graphUrl);
 	        Model model = accessor.getModel();
 	*/
-		private void searchZones(Model DRgraph) throws IOException {
+		public void searchZones(Model DRgraph) throws IOException {
 
 	        // CREATE GRAPH QUERY TO GET A LIST OF ZONES PER BUILDING
 	        Query query = QueryFactory.create(
@@ -108,52 +133,76 @@ public class BASActuator extends RBCController {
 	            }
 	        }
 	        qe.close();
-            System.out.println(onOffDatapointsPerZone);
-            System.out.println(levelDatapointsPerZone);
+            //System.out.println("onOffAvailableFunctionZones " + onOffDatapointsPerZone);
+            //System.out.println("levelAvailableFunctionZones " + levelDatapointsPerZone);
 	    }
 		
 
         // CHECK IF THE INPUT LIST OF ZONES WITH REQUIRED FUNCTIONS MATCH THE QUERIED FUNCTIONS AVAILABLE PER ZONE, IF SO ADD THE DATAPOINTS TO THE FUNCTION DICTIONARIES
-    public void matchRequiredAndAvailableFunctions() {
+    public void matchRequiredAndAvailableFunctions(RBCController rbcController) {
 
-    	//test
+    	offModeZones = rbcController.getOffModeZones();
+    	tempSetMaxZones = rbcController.getTempSetMaxZones();
+    	tempSetMinZones = rbcController.getTempSetMinZones();
+    	tempSetNormalZones = rbcController.getTempSetNormalZones();
+    	
         // FOR offMode FUNCTION
-        for (String currentZoneOffMode : (ArrayList<String>) offModeZones.get("Zones")) {
-            if (onOffDatapointsPerZone.containsKey(currentZoneOffMode)) {
-                offModeZones.put("Datapoints", Arrays.asList(onOffDatapointsPerZone.get(currentZoneOffMode)));
-	            System.out.println("offModeZonesMatch " + offModeZones);
-                break;
+        for (Map.Entry<String, String> queryList : onOffDatapointsPerZone.entrySet()) {
+            //System.out.println(queryList.getKey());
+        	ArrayList<String> zones = new ArrayList();
+            zones = (ArrayList<String>) offModeZones.get("Zones");
+            if (!(zones==null)) {
+            	if(zones.contains(queryList.getKey())) {
+            		offModeZones.put("Datapoints", queryList.getValue());
+	            	System.out.println("offModeZonesMatch " + offModeZones);
+                	break;
+                	}
             }
         }
 
         // FOR tempSetMax FUNCTION
-        for (String currentZoneTempSetMax : (ArrayList<String>) tempSetMaxZones.get("Zones")) {
-            if (levelDatapointsPerZone.containsKey(currentZoneTempSetMax)) {
-                tempSetMaxZones.put("Datapoints", Arrays.asList(levelDatapointsPerZone.get(currentZoneTempSetMax)));
-	            System.out.println("tempSetMaxZonesMatch " + tempSetMaxZones);
-                break;
+        for (Map.Entry<String, String> queryList : levelDatapointsPerZone.entrySet()) {
+            // System.out.println(queryList.getKey());
+        	 ArrayList<String> zones = new ArrayList();
+             zones = (ArrayList<String>) tempSetMaxZones.get("Zones");
+             if (!(zones==null)) {
+            	 if(zones.contains(queryList.getKey())) {
+            	 	tempSetMaxZones.put("Datapoints", queryList.getValue());
+            	 	System.out.println("tempSetMaxZonesMatch " + tempSetMaxZones);
+            	 	break;
+            	 }
             }
         }
 
         // FOR tempSetMin FUNCTION
-        for (String currentZoneTempSetMin : (ArrayList<String>) tempSetMinZones.get("Zones")) {
-            if (levelDatapointsPerZone.containsKey(currentZoneTempSetMin)) {
-                tempSetMinZones.put("Datapoints", Arrays.asList(levelDatapointsPerZone.get(currentZoneTempSetMin)));
-	            System.out.println("tempSetMinZonesMatch " + tempSetMinZones);
-                break;
-            }
-        }
+          for (Map.Entry<String, String> queryList : levelDatapointsPerZone.entrySet()) {
+              //System.out.println(queryList.getKey());
+              ArrayList<String> zones = new ArrayList();
+              zones = (ArrayList<String>) tempSetMinZones.get("Zones");
+              if (!(zones==null)) {
+            	  if (zones.contains(queryList.getKey())) {
+            	   tempSetMinZones.put("Datapoints", queryList.getValue());
+        	       System.out.println("tempSetMinZonesMatch " + tempSetMinZones);
+        	       break;
+            	  }
+               }
+          }
 
         // FOR tempSetNormal FUNCTION
-        for (String currentZoneTempSetNormal : (ArrayList<String>) tempSetNormalZones.get("Zones")) {
-            if (levelDatapointsPerZone.containsKey(currentZoneTempSetNormal)) {
-                tempSetNormalZones.put("Datapoints", Arrays.asList(levelDatapointsPerZone.get(currentZoneTempSetNormal)));
-	            System.out.println("tempSetNormalZonesMatch " + tempSetNormalZones);
-                break;
-            }
-        }
-    }
+          for (Map.Entry<String, String> queryList : levelDatapointsPerZone.entrySet()) {
+              //System.out.println(queryList.getKey());
+        	  ArrayList<String> zones = new ArrayList();
+              zones = (ArrayList<String>) tempSetNormalZones.get("Zones");
+              if (!(zones==null)) {
+            	  if (zones.contains(queryList.getKey())) {
+            		  tempSetNormalZones.put("Datapoints", queryList.getValue());
+            		  System.out.println("tempSetNormalZonesMatch " + tempSetNormalZones);
+            		  break;
+            	  }
+               }
+          }    
     
+    }
     // WRITE COMMAND TO THE DATAPOINTS IDS THAT MATCH THE REQUIRED FUNCTION PER ZONE
 
     // using the updated dictionary per function which has: List of zones, Function type, Setpoint value (if applicable), Slot time, and List of Datapoints

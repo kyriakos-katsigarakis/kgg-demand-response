@@ -80,6 +80,7 @@ public class ResourceConverter {
 		for(CSVRecord record : recordIterator) {
 			HashSet<String> uniqueValues = new HashSet<>();
 			uniqueValues.add(record.get("deviceSerialNumber"));
+			// test
 			Iterator<String> iterate_value = uniqueValues.iterator();
 			while (iterate_value.hasNext()) {
 				if (record.get("deviceSerialNumber").equals(iterate_value.next())) {
@@ -95,21 +96,21 @@ public class ResourceConverter {
 							Resource resOccupancySensor =  rdfModel.createResource(rdfModel.getNsPrefixURI("om") + deviceSerialNumber + "_OccupancySensor");
 							resOccupancySensor.addProperty(RDF.type, ResourceFactory.createResource(rdfModel.getNsPrefixURI("brick") + "Occupancy_Sensor"));																		
 							resOccupancySensor.addProperty( ResourceFactory.createProperty(rdfModel.getNsPrefixURI("brick") + "timeseries"), endpoint);
-							//resOccupancySensor.addProperty(ResourceFactory.createProperty(rdfModel.getNsPrefixURI("brick") + "isPointOf"), resController);
+							resOccupancySensor.addProperty(ResourceFactory.createProperty(rdfModel.getNsPrefixURI("brick") + "isPointOf"), resController);
 							//upd parent
 							resController.addProperty(ResourceFactory.createProperty(rdfModel.getNsPrefixURI("brick") + "hasPoint"), resOccupancySensor);
 						}else if(record.get("tag").contains("temp")) {
 							Resource resTemperatureSensor =  rdfModel.createResource(rdfModel.getNsPrefixURI("om") + deviceSerialNumber + "_TemperatureSensor");
 							resTemperatureSensor.addProperty(RDF.type, ResourceFactory.createResource(rdfModel.getNsPrefixURI("brick") + "Zone_Air_Temperature_Sensor"));																		
 							resTemperatureSensor.addProperty( ResourceFactory.createProperty(rdfModel.getNsPrefixURI("brick") + "timeseries"), endpoint);
-							//resTemperatureSensor.addProperty(ResourceFactory.createProperty(rdfModel.getNsPrefixURI("brick") + "isPointOf"), resController);
+							resTemperatureSensor.addProperty(ResourceFactory.createProperty(rdfModel.getNsPrefixURI("brick") + "isPointOf"), resController);
 							//upd parent
 							resController.addProperty(ResourceFactory.createProperty(rdfModel.getNsPrefixURI("brick") + "hasPoint"), resTemperatureSensor);
 						}else if(record.get("tag").contains("power")) {
 							Resource resPowerSensor =  rdfModel.createResource(rdfModel.getNsPrefixURI("om") + deviceSerialNumber + "_PowerSensor");
 							resPowerSensor.addProperty(RDF.type, ResourceFactory.createResource(rdfModel.getNsPrefixURI("brick") + "Active_Power_Sensor"));																		
 							resPowerSensor.addProperty( ResourceFactory.createProperty(rdfModel.getNsPrefixURI("brick") + "timeseries"), endpoint);
-							//resPowerSensor.addProperty(ResourceFactory.createProperty(rdfModel.getNsPrefixURI("brick") + "isPointOf"), resController);
+							resPowerSensor.addProperty(ResourceFactory.createProperty(rdfModel.getNsPrefixURI("brick") + "isPointOf"), resController);
 							//upd parent
 							resController.addProperty(ResourceFactory.createProperty(rdfModel.getNsPrefixURI("brick") + "hasPoint"), resPowerSensor);
 						} else {}
@@ -126,13 +127,13 @@ public class ResourceConverter {
 							//tba resHVAC.addProperty(ResourceFactory.createProperty(rdfModel.getNsPrefixURI("saref") + "hasState"), resZoneSetStatus); 
 							
 							resZoneSetPoint.addProperty(ResourceFactory.createProperty(rdfModel.getNsPrefixURI("brick") + "timeseries"), endpoint);
-							//resZoneSetPoint.addProperty(ResourceFactory.createProperty(rdfModel.getNsPrefixURI("brick") + "isPointOf"), resController);
+							resZoneSetPoint.addProperty(ResourceFactory.createProperty(rdfModel.getNsPrefixURI("brick") + "isPointOf"), resController);
 							//upd parent
 							resController.addProperty(ResourceFactory.createProperty(rdfModel.getNsPrefixURI("brick") + "hasPoint"), resZoneSetPoint);
 							
 							Resource resSetPointFunction = rdfModel.createResource(rdfModel.getNsPrefixURI("om") + deviceSerialNumber + "_SetPointFunction");
 							resSetPointFunction.addProperty(RDF.type, ResourceFactory.createResource(rdfModel.getNsPrefixURI("saref") + "LevelControlFunction"));
-							//resZoneSetPoint.addProperty(ResourceFactory.createProperty(rdfModel.getNsPrefixURI("saref") + "isCommandOf"), resSetPointFunction);
+							resZoneSetPoint.addProperty(ResourceFactory.createProperty(rdfModel.getNsPrefixURI("saref") + "isCommandOf"), resSetPointFunction);
 							//upd parent
 							resSetPointFunction.addProperty(ResourceFactory.createProperty(rdfModel.getNsPrefixURI("saref") + "hasCommand"), resZoneSetPoint);
 							//upd parent
@@ -141,14 +142,14 @@ public class ResourceConverter {
 							Resource resSetpointMax = rdfModel.createResource(rdfModel.getNsPrefixURI("om") + deviceSerialNumber + "_SetpointMax");
 							resSetpointMax.addProperty(RDF.type, ResourceFactory.createResource(rdfModel.getNsPrefixURI("brick") + "Max_Air_Temperature_Setpoint"));
 							resSetpointMax.addProperty( ResourceFactory.createProperty(rdfModel.getNsPrefixURI("brick") + "timeseries"), endpoint);
-							//resSetpointMax.addProperty(ResourceFactory.createProperty(rdfModel.getNsPrefixURI("brick") + "isPointOf"), resController);
+							resSetpointMax.addProperty(ResourceFactory.createProperty(rdfModel.getNsPrefixURI("brick") + "isPointOf"), resController);
 							//upd parent
 							resController.addProperty(ResourceFactory.createProperty(rdfModel.getNsPrefixURI("brick") + "hasPoint"), resSetpointMax);
 						}else if(record.get("tag").contains("sp") && record.get("tag").contains("max") == false && record.get("tag").contains("min") == true){
 							Resource resSetpointMin = rdfModel.createResource(rdfModel.getNsPrefixURI("om") + deviceSerialNumber + "_SetpointMin");
 							resSetpointMin.addProperty(RDF.type, ResourceFactory.createResource(rdfModel.getNsPrefixURI("brick") + "Min_Air_Temperature_Setpoint"));
 							resSetpointMin.addProperty( ResourceFactory.createProperty(rdfModel.getNsPrefixURI("brick") + "timeseries"),  endpoint);
-							//resSetpointMin.addProperty(ResourceFactory.createProperty(rdfModel.getNsPrefixURI("brick") + "isPointOf"), resController);
+							resSetpointMin.addProperty(ResourceFactory.createProperty(rdfModel.getNsPrefixURI("brick") + "isPointOf"), resController);
 							//upd parent
 							resController.addProperty(ResourceFactory.createProperty(rdfModel.getNsPrefixURI("brick") + "hasPoint"), resSetpointMin);	
 						}else if(record.get("tag").contains("onoff")){
@@ -171,8 +172,8 @@ public class ResourceConverter {
 							resOnOffFunction.addProperty(RDF.type, ResourceFactory.createResource(rdfModel.getNsPrefixURI("saref") + "OnOffFunction"));
 							//upd parent
 							resController.addProperty(ResourceFactory.createProperty(rdfModel.getNsPrefixURI("saref") + "hasFunction"), resOnOffFunction);
-							//resOnCommand.addProperty(ResourceFactory.createProperty(rdfModel.getNsPrefixURI("saref") + "isCommandOf"), resOnOffFunction);
-							//resOffCommand.addProperty(ResourceFactory.createProperty(rdfModel.getNsPrefixURI("saref") + "isCommandOf"), resOnOffFunction);
+							resOnCommand.addProperty(ResourceFactory.createProperty(rdfModel.getNsPrefixURI("saref") + "isCommandOf"), resOnOffFunction);
+							resOffCommand.addProperty(ResourceFactory.createProperty(rdfModel.getNsPrefixURI("saref") + "isCommandOf"), resOnOffFunction);
 							//upd parent
 							resOnOffFunction.addProperty(ResourceFactory.createProperty(rdfModel.getNsPrefixURI("saref") + "hasCommand"), resOnCommand);	
 							resOnOffFunction.addProperty(ResourceFactory.createProperty(rdfModel.getNsPrefixURI("saref") + "hasCommand"), resOffCommand);	
@@ -180,7 +181,7 @@ public class ResourceConverter {
 							Resource resSendSettings = rdfModel.createResource(rdfModel.getNsPrefixURI("om") + deviceSerialNumber + "_Run");
 							resSendSettings.addProperty(RDF.type, ResourceFactory.createResource(rdfModel.getNsPrefixURI("brick") + "Enable_Command"));
 							resSendSettings.addProperty( ResourceFactory.createProperty(rdfModel.getNsPrefixURI("brick") + "timeseries"),  endpoint);
-							//resSendSettings.addProperty(ResourceFactory.createProperty(rdfModel.getNsPrefixURI("brick") + "isPointOf"), resController);
+							resSendSettings.addProperty(ResourceFactory.createProperty(rdfModel.getNsPrefixURI("brick") + "isPointOf"), resController);
 							//upd parent
 							resController.addProperty(ResourceFactory.createProperty(rdfModel.getNsPrefixURI("brick") + "hasPoint"), resSendSettings);	
 						}else{}
@@ -193,4 +194,5 @@ public class ResourceConverter {
 		}	
 				
 	}			
+		
 }

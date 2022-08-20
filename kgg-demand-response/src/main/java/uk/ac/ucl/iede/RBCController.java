@@ -104,7 +104,7 @@ public class RBCController {
         DatasetAccessor accessor = DatasetAccessorFactory.createHTTP(graphUrl);
         Model model = accessor.getModel();
 */
-	private void searchZones(Model DRgraph) throws IOException {
+	public void searchZones(Model DRgraph) throws IOException {
 
         // CREATE GRAPH QUERY TO GET A LIST OF ZONES PER BUILDING
         Query query = QueryFactory.create(
@@ -228,7 +228,7 @@ public class RBCController {
             case tempSetMin:
                 // write request for level function for the defined zoneURIs with tempSetMinValue
                 String tempSetMinFunction = "levelCmd";
-                tempSetMinZones.put("Zones", Arrays.asList(zoneURIs));
+                tempSetMinZones.put("Zones", zoneURIs);
                 tempSetMinZones.put("Function", tempSetMinFunction);
                 tempSetMinZones.put("Setpoint value", tempSetMinValue);
                 tempSetMinZones.put("Start time", startSlot);
@@ -252,17 +252,21 @@ public class RBCController {
                // tell(omBodyOut);
                 break;
         }
+        //System.out.println(offModeZones);
+        //System.out.println(tempSetMaxZones);
+        //System.out.println(tempSetMinZones);
+    	//System.out.println(tempSetNormalZones);
     }
     
-   public Map<Object, Object> getoffModeZones() {
+   public Map<Object, Object> getOffModeZones() {
         return offModeZones;
     }  
     
-    public Map<Object, Object> gettempSetMaxZones() {
+    public Map<Object, Object> getTempSetMaxZones() {
         return tempSetMaxZones;
     }  
     
-    public Map<Object, Object> gettempSetMinZones() {
+    public Map<Object, Object> getTempSetMinZones() {
         return tempSetMinZones;
     }  
     
