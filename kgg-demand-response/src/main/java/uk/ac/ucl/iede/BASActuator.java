@@ -59,12 +59,23 @@ public class BASActuator extends RBCController  {
 		BASActuator basActuator = new BASActuator(); 
 		basActuator.searchZones(DRgraph);
 		basActuator.matchRequiredAndAvailableFunctions(rbcController);
+		basActuator.sendCommand();
 
 	}
 	   
     Map<String, String> onOffDatapointsPerZone = new HashMap<>();    // Available onOff function datapoints per zone
 	Map<String, String> levelDatapointsPerZone = new HashMap<>();    // Available level function datapoints per zone
 
+	 // GET CURRENT TIME (epoch time: https://www.epochconverter.com/)
+    public int getCurrentTime () {
+        long epoch = (System.currentTimeMillis()) / 1000; // Returns epoch in seconds.
+	    // Epoch date 	Converted epoch
+        // 1640995200	Sat, 01 Jan 2022 00:00:00 +0000
+        long correctedCurrentTime = epoch - 1640995200; // Corrected to  match with the time in the timeseries file which starts with 0 to represent January 1st 00:00:00)
+        return (int) correctedCurrentTime;  
+    	
+    }
+    
 	// CONFIGURE KNOWLEDGE GRAPH INITIALISATION
 	    /*
 	    private static final Logger log = LoggerFactory.getLogger(OMActorKGE.class);
@@ -198,11 +209,19 @@ public class BASActuator extends RBCController  {
             		  break;
             	  }
                }
-               
           }    
-    
     }
     // WRITE COMMAND TO THE DATAPOINTS IDS THAT MATCH THE REQUIRED FUNCTION PER ZONE
+
+    public void sendCommand() {
+		long currentTime = getCurrentTime(); // check for current time
+		System.out.println(currentTime);
+		if (tempSetNormalZones.get("Start time").equals(currentTime)) {
+  		  System.out.println("tempSetNormalZonesMatch " + tempSetNormalZones.get("Start time"));
+  		  System.out.println("tempSetNormalZonesMatch " + tempSetNormalZones.get("Datapoint"));
+  		  System.out.println("tempSetNormalZonesMatch " + tempSetNormalZones.get("Set point"));
+		}
+    }
 
     // using the updated dictionary per function which has: List of zones, Function type, Setpoint value (if applicable), Slot time, and List of Datapoints
 
